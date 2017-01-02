@@ -8,6 +8,8 @@ struct Node{
     Node* right;
 };
 Node* root=NULL;
+Node* root1=NULL;
+queue<int> q1;
 
 Node* GetNode(int data)
 {
@@ -108,9 +110,41 @@ void inorder(Node* root)
     if(root==NULL){
         return;
     }
+    cout<<"(";
     inorder(root->left);
-    cout<<root->data<<"--";
+    cout<<root->data;
     inorder(root->right);
+    cout<<")";
+}
+
+void inorder_special(Node* root1,Node* root2)
+{
+    if(root1==NULL && root2==NULL){
+        return;
+    }
+    inorder_special(root1->left,root2->left);
+    if(root1->data < root2->data){
+        q1.push(root2->data);
+        if(root1->data < q1.front()){
+            cout<<root1->data;
+        }
+        else{
+            cout<<q1.front();
+            q1.pop();
+        }
+        inorder_special(root1->right,root2->right);
+    }
+    else{
+        q1.push(root1->data);
+        if(root2->data < q1.front()){
+            cout<<root2->data;
+        }
+        else{
+            cout<<q1.front();
+            q1.pop();
+        }
+        inorder_special(root1->right,root2->right);
+    }
 }
 
 void postorder(Node* root)
@@ -182,14 +216,22 @@ int main() {
 	bfs(root);
 	cout<<endl;
 	//preorder(root);
-	cout<<endl;
-	//inorder(root);cout<<endl;
+	//cout<<endl;
+	inorder(root);cout<<endl;
 	//postorder(root);cout<<endl;
 	long z,y;
 	z=y=1000000;
 	isbst(root,z,y);
-	deletenode(root,10);
-	bfs(root);
-	cout<<endl;
+	//deletenode(root,10);
+	//bfs(root);
+	//cout<<endl;
+	root1=insert(root1,30);
+	root1=insert(root1,5);
+	root1=insert(root1,35);
+	inorder_special(root,root1);
+	if(!q1.empty()){
+	    cout<<q1.front();
+	    q1.pop();
+	}
 	return 0;
 }
