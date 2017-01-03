@@ -1,5 +1,6 @@
 #include <iostream>
 #include <queue>
+#include <stack>
 using namespace std;
 
 struct Node{
@@ -110,11 +111,11 @@ void inorder(Node* root)
     if(root==NULL){
         return;
     }
-    cout<<"(";
+    //cout<<"(";
     inorder(root->left);
-    cout<<root->data;
+    cout<<root->data<<"--";
     inorder(root->right);
-    cout<<")";
+    //cout<<")";
 }
 
 void inorder_special(Node* root1,Node* root2)
@@ -203,11 +204,73 @@ Node* deletenode(Node* root,int val){
     }
 }
 
+Node* getkmin(Node* root, int k){
+    stack<Node*> stk;
+    Node* temp=root;
+    while(temp){
+        stk.push(temp);
+        temp=temp->left;
+    }
+    while(temp=stk.top()){
+        stk.pop();
+        --k;
+        if(!k){
+            return temp;
+        }
+        if(temp->right){
+            temp=temp->right;
+            while(temp){
+                stk.push(temp);
+                temp=temp->left;
+            }
+        }
+    }
+    return NULL;
+}
+
+Node* ceilvalue(Node* root,int key){
+    if(root==NULL){
+        return NULL;
+    }
+    if(root->data==key){
+        return root;
+    }
+    else if(root->data < key){
+        return (ceilvalue(root->right,key));
+    }
+    else{
+        if(root->left==NULL){
+            return root;
+        }
+        return (ceilvalue(root->left,key));
+        if(root->data > key){
+            return root;
+        }
+    }
+    
+}
+
+void convertbst_tobt(Node* root,int *sum){
+    if(root==NULL){
+        return;
+    }
+    convertbst_tobt(root->right,sum);
+    (*sum)+=root->data;
+    root->data=*sum;
+    cout<<root->data<<"--";
+    convertbst_tobt(root->left,sum);
+}
+
 int main() {
 	// your code goes here
-	root=insert(root,15);
 	root=insert(root,20);
+	root=insert(root,8);
+	root=insert(root,4);
+	root=insert(root,12);
 	root=insert(root,10);
+	root=insert(root,14);
+	root=insert(root,22);
+	
 	bool x=search(root,90);
 	(x==true)?cout<<"found":cout<<"not found"<<endl;
 	cout<<"Min element is:"<<Getmin(root)<<endl;
@@ -228,10 +291,17 @@ int main() {
 	root1=insert(root1,30);
 	root1=insert(root1,5);
 	root1=insert(root1,35);
-	inorder_special(root,root1);
+	/*inorder_special(root,root1);
 	if(!q1.empty()){
 	    cout<<q1.front();
 	    q1.pop();
-	}
+	}*/
+	Node* temp=getkmin(root,5);
+	cout<<"kth min="<<temp->data<<endl;
+	temp=ceilvalue(root,23);
+	if(temp==NULL){cout<<"no space"<<endl;}
+	else{cout<<"best fit:"<<temp->data<<endl;}
+	int sum=0;
+	convertbst_tobt(root,&sum);
 	return 0;
 }
